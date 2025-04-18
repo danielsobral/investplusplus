@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+# Run phpstan
+docker compose exec -T laravel sh -c './vendor/bin/phpstan analyse'
+
+if [ $? -ne 0 ]; then
+    echo "Oops! Something went wrong with your PHP STAN! Fix it before committing..."
+    exit 1;
+fi
+
+# Run test parallel
+docker compose exec -T laravel sh -c 'php artisan test --parallel'
+
+if [ $? -ne 0 ]; then
+    echo "Oops! Something went wrong with some test! Fix it before committing..."
+    exit 1;
+fi
+
+# Format code when using Laravel Pint
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep ".php\(0,1\)$") || true
+
+for FILE in $STAGED_FILES
+do
+    docker compose exec -T laravel sh -c "./vendor/bin/pint ${FILE}" >&1;
+    git add "${FILE}";
+done;
+
+exit 0;
