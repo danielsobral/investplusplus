@@ -4,7 +4,15 @@
 docker compose exec -T laravel sh -c './vendor/bin/phpstan analyse'
 
 if [ $? -ne 0 ]; then
-    echo "Oops! Something went wrong with your code! Fix it before committing..."
+    echo "Oops! Something went wrong with your PHP STAN! Fix it before committing..."
+    exit 1;
+fi
+
+# Run test parallel
+docker compose exec -T laravel sh -c 'php artisan test --parallel'
+
+if [ $? -ne 0 ]; then
+    echo "Oops! Something went wrong with some test! Fix it before committing..."
     exit 1;
 fi
 
