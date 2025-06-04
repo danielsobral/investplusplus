@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-Route::get('/', function (Request $request) {
-    return 'ok';
+Route::get('/ping', function (Request $request) {
+    return json_encode([
+        'message' => 'pong',
+    ]);
 });
